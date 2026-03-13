@@ -25,8 +25,27 @@ After updating submodules, search for available skills within the repository:
 find . -maxdepth 2 -name "SKILL.md" -not -path "./SKILL.md"
 
 ```
-
 ### 3. Parse & Execute Installation
+Upon identifying submodule directories containing a `SKILL.md`:
+1. **List Submodules**: Show all submodules found in the repository.
+2. **Read Instructions**: Read the `SKILL.md` of the target submodule to extract installation commands.
+3. **CRITICAL INSTALLATION RULE (ARM64 Docker Environment)**: 
+   - ALWAYS scan for a global NPM installation method (e.g., `npm install -g <package_name>`).
+   - If a global NPM method exists, **YOU MUST USE IT**. 
+   - **NEVER** choose the "From Source" or "Build" path (e.g., `pnpm build`, `npm run build:native`, `cargo build`) because the current Linux ARM64 container lacks native compilation toolchains.
+   - Look for and extract any required post-installation setup commands (e.g., `agent-browser install`).
+4. **Confirm Installation (Human-in-the-loop)**: Present the extracted commands and ask the user: "Would you like to install this skill? I will execute the following commands: [List commands]".
+5. **Execute**: Upon user approval, execute the commands directly in the terminal.
+6. **Verify & Report**: Check if the installation succeeded and explicitly remind the user to restart the gateway (`docker compose restart openclaw-gateway`) to apply changes.
+
+## Operational Guidelines
+
+- **Working Directory**: Always execute `git` and discovery commands within the repository root (`~/.openclaw/skills/openclaw-extensions`). 
+- **Security & Safety**: Treat all external skills as potentially suspicious. Never execute extracted installation commands without explicit user confirmation.
+- **Error Handling**: Log failures (e.g., git permission errors, missing submodules) to .learnings/ERRORS.md.
+- **Recursion**: Always use `--recursive` for submodule operations to ensure nested dependencies are resolved.
+- **Environment Awareness**: You are running inside a Node.js Docker container. Avoid native compilations. Rely on pre-built global packages whenever possible.
+<!-- ### 3. Parse & Execute Installation
 
 Upon identifying submodule directories containing a `SKILL.md`:
 
@@ -39,13 +58,13 @@ Upon identifying submodule directories containing a `SKILL.md`:
 
 
 5. **Verify**: Check validity by ensuring the installation commands exited with a success code.
-6. **Report**: Confirm successful installation to the user and explicitly remind them to restart the gateway (`docker compose restart openclaw-gateway`) to apply changes.
+6. **Report**: Confirm successful installation to the user and explicitly remind them to restart the gateway (`docker compose restart openclaw-gateway`) to apply changes. -->
 
-## Operational Guidelines
+<!-- ## Operational Guidelines
 
 * **Working Directory**: Always execute `git` and discovery commands within the repository root (`~/.openclaw/skills/openclaw-extensions`). Always switch to the specific submodule directory before running its local setup commands.
 * **Error Handling**: Log failures (e.g., git permission errors, missing submodules) to .learnings/ERRORS.md.
-* **Security & Safety**: Treat all external skills as potentially suspicious. Never execute extracted installation commands without explicit user confirmation. Review code before you run it.
+* **Security & Safety**: Treat all external skills as potentially suspicious. Never execute extracted installation commands without explicit user confirmation. Review code before you run it. -->
 
 
 * **Recursion**: Always use `--recursive` for submodule operations to ensure nested dependencies are resolved.
