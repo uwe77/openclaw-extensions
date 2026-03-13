@@ -1,6 +1,6 @@
 [submodule "agent-browser"]
 	path = agent-browser
-	url = git@github.com:lumi77-mac/agent-browser.git
+	url = https://github.com/lumi77-mac/agent-browser.git
 [submodule "self-improving-agent"]
 	path = self-improving-agent
-	url = git@github.com:lumi77-mac/self-improving-agent.git
+	url = https://github.com/lumi77-mac/self-improving-agent.git
