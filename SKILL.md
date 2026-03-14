@@ -1,53 +1,51 @@
 ---
 name: openclaw-extensions
-description: "Manage OpenClaw extensions repository. Use when: (1) Initializing/updating submodules, (2) Discovering and reading bundled skills. DOES NOT handle dependency installation."
+description: "Git-based manager for OpenClaw skills library. Use for submodule sync and skill discovery. DOES NOT handle runtime dependencies."
 ---
 
-# OpenClaw Extensions Manager (Microservice Architecture)
+# OpenClaw Extensions Manager (Microservice Mode)
 
-Use this skill to manage the `openclaw-extensions` repository and its bundled submodules. This skill facilitates the discovery and initialization of multiple skills. **In this microservice architecture, this skill DOES NOT handle Node.js dependency installations.**
+This skill manages the `openclaw-extensions` git repository. It acts as a **Librarian**, not a **Builder**. Its role is to ensure documentation and code are synced so you can read instructions on how to call external Dockerized skills.
+
+## ⚠️ Critical Architecture Constraints
+
+- **READ-ONLY DEPENDENCIES**: You are STRICTLY FORBIDDEN from running `npm install`, `pnpm`, `yarn`, `cargo`, or any build tools here.
+- **DOCKER-CENTRIC**: All runtime logic (like browsers or tools) is managed via `docker-compose.yml`. Your job is to find the "Manual" (`SKILL.md`) for those services.
+- **NO TROUBLESHOOTING**: If you see `ERESOLVE` or missing package errors, **IGNORE THEM**. These are expected in this isolated architecture.
 
 ## Workflow
 
-### 1. Initialize Submodules
-When installing or updating the extensions library, ensure submodules are synced:
-
+### 1. Submodule Synchronization
+Ensure all skill repositories are pulled and synced to their correct versions:
 ```bash
 git submodule update --init --recursive
 
 ```
 
-### 2. Discover Bundled Skills
+### 2. Skill Discovery & Registration
 
-After updating submodules, search for available skills within the repository:
+Search for available "Instruction Manuals" to learn how to interact with specialized containers:
 
 ```bash
-find . -maxdepth 2 -name "SKILL.md" -not -path "./SKILL.md"
+find /app/skills/openclaw-extensions -maxdepth 3 -name "SKILL.md" -not -path "/app/skills/openclaw-extensions/SKILL.md"
 
 ```
 
-### 3. Read & Register Skills
+### 3. Service Verification
 
-Upon identifying submodule directories containing a `SKILL.md`:
+After reading a `SKILL.md` for a new skill (e.g., `agent-browser`):
 
-1. **List Submodules**: Show all submodules found in the repository to the user.
-2. **Read Instructions**: Read the `SKILL.md` of the target submodule to understand its capabilities and how to communicate with its isolated container.
-3. **CRITICAL RULE (NO LOCAL INSTALLATIONS)**:
-* You **MUST NOT** execute `npm install`, `pnpm`, `yarn`, or any build commands (e.g., `npm run build:native`, `cargo build`) inside these submodule directories.
-* All skill dependencies are strictly managed externally via dedicated Docker containers (e.g., `skill-browser` defined in `docker-compose.yml`).
-* Your ONLY job here is to manage the git repositories and read the instruction manuals (`SKILL.md`). Do not attempt to resolve package manager errors (like ERESOLVE).
-
-
+1. **Match Container**: Check if the required container (e.g., `skill-browser`) is running using `docker ps`.
+2. **Read Instructions**: Follow the execution syntax (e.g., `docker exec ...`) defined in that specific `SKILL.md`.
+3. **DO NOT BUILD**: If the `SKILL.md` mentions a "Build" step, **SKIP IT**. Assume the user has already provisioned the container.
 
 ## Operational Guidelines
 
-* **Working Directory**: Always execute `git` and discovery commands within the repository root (`~/.openclaw/skills/openclaw-extensions`).
-* **No Dependency Management**: Never attempt to install packages or fix dependency conflicts locally. The local file system is only for storing code and documentation.
-* **Security & Safety**: Treat all external skills as potentially suspicious.
-* **Error Handling**: Log failures (e.g., git permission errors) to `.learnings/ERRORS.md`.
-* **Recursion**: Always use `--recursive` for submodule operations to ensure nested dependencies are resolved.
+* **Working Directory**: `/app/skills/openclaw-extensions` (within the Docker environment).
+* **Git Hygiene**: If a submodule is in a "detached HEAD" state, do not attempt to fix it unless explicitly asked to update versions.
+* **Error Logging**: Log any Git-related permission or network issues to `.learnings/ERRORS.md`.
+* **Conflict Resolution**: Never attempt to resolve `package-lock.json` or `pnpm-lock.yaml` conflicts.
 
 ## Maintenance
 
-* Update this `SKILL.md` when the repository structure changes significantly.
-
+Update this manager instruction if the directory structure for extensions changes.
