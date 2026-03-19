@@ -4,3 +4,6 @@
 [submodule "self-improving-agent"]
 	path = self-improving-agent
 	url = git@github.com:lumi77-mac/self-improving-agent.git
+[submodule "gog"]
+	path = gog
+	url = git@github.com:lumi77-mac/gog.git
