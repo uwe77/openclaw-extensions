@@ -7,3 +7,9 @@
 [submodule "gog"]
 	path = gog
 	url = git@github.com:lumi77-mac/gog.git
+[submodule "find-skills"]
+	path = find-skills
+	url = git@github.com:lumi77-mac/find-skills.git
+[submodule "GitHub"]
+	path = GitHub
+	url = git@github.com:lumi77-mac/GitHub.git
