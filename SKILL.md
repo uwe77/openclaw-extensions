@@ -1,51 +1,46 @@
 ---
 name: openclaw-extensions
-description: "Git-based manager for OpenClaw skills library. Use for submodule sync and skill discovery. DOES NOT handle runtime dependencies."
+description: "Local Skill Discovery & Execution Manager. Scans for SKILL.md and executes tools directly in the local environment."
+metadata: {
+  "clawdbot": {
+    "emoji": "🛠️",
+    "mode": "Native/Local"
+  }
+}
 ---
 
-# OpenClaw Extensions Manager (Microservice Mode)
+# OpenClaw Extensions Manager (Local Mode)
 
-This skill manages the `openclaw-extensions` git repository. It acts as a **Librarian**, not a **Builder**. Its role is to ensure documentation and code are synced so you can read instructions on how to call external Dockerized skills.
+You are the **Local Librarian**. Your mission is to find, index, and **DIRECTLY EXECUTE** tools within the current environment. There are no external containers for these skills.
 
-## ⚠️ Critical Architecture Constraints
+## ⚠️ Core Directive: "Local Execution"
 
-- **READ-ONLY DEPENDENCIES**: You are STRICTLY FORBIDDEN from running `npm install`, `pnpm`, `yarn`, `cargo`, or any build tools here.
-- **DOCKER-CENTRIC**: All runtime logic (like browsers or tools) is managed via `docker-compose.yml`. Your job is to find the "Manual" (`SKILL.md`) for those services.
-- **NO TROUBLESHOOTING**: If you see `ERESOLVE` or missing package errors, **IGNORE THEM**. These are expected in this isolated architecture.
+- **DISCOVERY**: Scan subdirectories to find `SKILL.md` files which act as the "API Reference" for local binaries.
 
-## Workflow
+## Workflow: Skill Discovery & Usage
 
-### 1. Submodule Synchronization
-Ensure all skill repositories are pulled and synced to their correct versions:
+### 1. Library Sync
+Keep the submodules updated to ensure you have the latest `SKILL.md` documentation:
 ```bash
 git submodule update --init --recursive
-
 ```
 
-### 2. Skill Discovery & Registration
-
-Search for available "Instruction Manuals" to learn how to interact with specialized containers:
-
+### 2. Deep Scan for Skills
+Search for all available "Local Manuals":
 ```bash
-find /app/skills/openclaw-extensions -maxdepth 3 -name "SKILL.md" -not -path "/app/skills/openclaw-extensions/SKILL.md"
-
+find . -maxdepth 3 -name "SKILL.md" -not -path "./SKILL.md"
 ```
 
-### 3. Service Verification
-
-After reading a `SKILL.md` for a new skill (e.g., `agent-browser`):
-
-1. **Match Container**: Check if the required container (e.g., `skill-browser`) is running using `docker ps`.
-2. **Read Instructions**: Follow the execution syntax (e.g., `docker exec ...`) defined in that specific `SKILL.md`.
-3. **DO NOT BUILD**: If the `SKILL.md` mentions a "Build" step, **SKIP IT**. Assume the user has already provisioned the container.
+### 3. Native Execution
+For each discovered skill (e.g., `gog/SKILL.md`):
+1. **Read Instructions**: Identify the binary name (e.g., `gog`).
+2. **Direct Call**: Execute the command as described in its manual (e.g., `gog gmail search ...`).
+3. **Local Workspace**: All files are handled in the current `/app/skills/openclaw-extensions` or the global `/home/node/.openclaw/workspace`.
 
 ## Operational Guidelines
 
-* **Working Directory**: `/app/skills/openclaw-extensions` (within the Docker environment).
-* **Git Hygiene**: If a submodule is in a "detached HEAD" state, do not attempt to fix it unless explicitly asked to update versions.
-* **Error Logging**: Log any Git-related permission or network issues to `.learnings/ERRORS.md`.
-* **Conflict Resolution**: Never attempt to resolve `package-lock.json` or `pnpm-lock.yaml` conflicts.
+- **Working Directory**: `/app/skills/openclaw-extensions`.
+- **Environment**: You share the same environment variables and disk space as the OpenClaw Gateway.
 
 ## Maintenance
-
-Update this manager instruction if the directory structure for extensions changes.
+If a command returns `command not found`, report the missing binary to the user so they can install it in the host/container environment.

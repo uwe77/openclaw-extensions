@@ -13,3 +13,12 @@
 [submodule "GitHub"]
 	path = GitHub
 	url = git@github.com:lumi77-mac/GitHub.git
+[submodule "summarize"]
+	path = summarize
+	url = git@github.com:lumi77-mac/summarize.git
+[submodule "skill-vetter"]
+	path = skill-vetter
+	url = git@github.com:lumi77-mac/skill-vetter.git
+[submodule "github-skill"]
+	path = github-skill
+	url = git@github.com:lumi77-mac/github-skill.git
